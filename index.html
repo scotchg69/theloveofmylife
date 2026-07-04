@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do You Love Me?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #2a0e2e;
+    --bg-mid: #5c1a3d;
+    --rose: #ff5d8f;
+    --rose-soft: #ffb6c8;
+    --gold: #ffd479;
+    --cream: #fff6f2;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at 50% 30%, var(--bg-mid), var(--bg-deep) 70%);
+    color: var(--cream);
+  }
+
+  #stage{
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Ambient floating petals/sparkles */
+  .petal{
+    position:absolute;
+    top:-40px;
+    font-size: 18px;
+    opacity:0.55;
+    filter: drop-shadow(0 0 6px rgba(255,182,200,0.5));
+    animation-name: drift;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    pointer-events:none;
+    user-select:none;
+    z-index:1;
+  }
+
+  @keyframes drift{
+    from{ transform: translateY(-5vh) translateX(0) rotate(0deg); }
+    to{ transform: translateY(105vh) translateX(var(--drift-x, 40px)) rotate(360deg); }
+  }
+
+  /* Soft glow blobs behind everything */
+  .glow{
+    position:absolute;
+    border-radius:50%;
+    filter: blur(70px);
+    opacity:0.35;
+    z-index:0;
+    animation: pulseGlow 8s ease-in-out infinite;
+  }
+  .glow.one{ width:420px; height:420px; background: var(--rose); top:10%; left:15%; }
+  .glow.two{ width:380px; height:380px; background: #b23a6b; bottom:8%; right:12%; animation-delay:2s; }
+  .glow.three{ width:300px; height:300px; background: var(--gold); top:55%; left:60%; animation-delay:4s; opacity:0.18;}
+
+  @keyframes pulseGlow{
+    0%, 100%{ transform: scale(1); opacity:0.30; }
+    50%{ transform: scale(1.25); opacity:0.5; }
+  }
+
+  .content{
+    position:relative;
+    z-index:5;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding: 20px;
+  }
+
+  /* HEART */
+  .heart-wrap{
+    position:relative;
+    width: 220px;
+    height: 200px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 25px rgba(255,93,143,0.65));
+  }
+
+  .heart{
+    position:absolute;
+    width: 110px;
+    height: 110px;
+    top: 0;
+    left: 0;
+    animation: beat 1.15s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  .heart::before,
+  .heart::after{
+    content:"";
+    position:absolute;
+    width: 110px;
+    height: 176px;
+    background: linear-gradient(135deg, var(--rose) 0%, #ff2d6f 100%);
+    border-radius: 100px 100px 0 0;
+  }
+
+  .heart::before{
+    left: 55px;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+  }
+
+  .heart::after{
+    left: 0;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+  }
+
+  @keyframes beat{
+    0%, 100% { transform: scale(1); }
+    15%  { transform: scale(1.15); }
+    30%  { transform: scale(0.95); }
+    45%  { transform: scale(1.1); }
+    60%  { transform: scale(1); }
+  }
+
+  .heart-wrap{ left: 50%; transform: translateX(-50%); }
+  .heart{ left: 50%; transform: translateX(-50%); margin-left:-55px; }
+
+  h1{
+    font-family:'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    font-size: clamp(28px, 5vw, 46px);
+    margin: 8px 0 6px 0;
+    color: var(--cream);
+    text-shadow: 0 0 20px rgba(255, 93, 143, 0.5);
+  }
+
+  .subtitle{
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--rose-soft);
+    margin-bottom: 34px;
+    opacity: 0.85;
+  }
+
+  .buttons{
+    position: relative;
+    display:flex;
+    gap: 22px;
+    height: 64px;
+    align-items:center;
+    justify-content:center;
+    width: min(90vw, 420px);
+  }
+
+  button{
+    font-family:'Poppins', sans-serif;
+    font-weight:600;
+    font-size: 17px;
+    padding: 14px 34px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  #yesBtn{
+    background: linear-gradient(135deg, var(--gold), #ff9d6f);
+    color: #3a1512;
+    box-shadow: 0 8px 24px rgba(255, 157, 111, 0.45);
+  }
+  #yesBtn:hover{ transform: scale(1.06); }
+  #yesBtn.grown{ transform: scale(1.35); }
+
+  #noBtn{
+    background: linear-gradient(135deg, #ff5d8f, #c62368);
+    color: var(--cream);
+    border: 1.5px solid rgba(255,255,255,0.35);
+    box-shadow: 0 8px 24px rgba(198, 35, 104, 0.5);
+    position: relative;
+    z-index: 20;
+    transition: left 0.4s ease, top 0.4s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  #noBtn.escaping{
+    position: fixed;
+    z-index: 999;
+  }
+
+  #yesBtn.escaping{
+    position: fixed;
+    z-index: 999;
+    transition: left 0.4s ease, top 0.4s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  }
+
+  .yes-message{
+    margin-top: 28px;
+    font-family:'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(20px, 4vw, 30px);
+    color: var(--gold);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    text-shadow: 0 0 18px rgba(255, 212, 121, 0.6);
+  }
+  .yes-message.show{ opacity: 1; transform: translateY(0); }
+
+  .taunt{
+    margin-top: 18px;
+    min-height: 22px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--rose-soft);
+    opacity: 0.8;
+    font-style: italic;
+  }
+
+  canvas#fx{
+    position: fixed;
+    top:0; left:0;
+    width:100vw; height:100vh;
+    pointer-events:none;
+    z-index: 500;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .heart, .petal, .glow{ animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <div class="glow one"></div>
+  <div class="glow two"></div>
+  <div class="glow three"></div>
+
+  <div class="content">
+    <div class="heart-wrap">
+      <div class="heart"></div>
+    </div>
+
+    <h1 id="question">Do you love me?</h1>
+    <div class="subtitle">be honest ♡</div>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes</button>
+      <button id="noBtn">No</button>
+    </div>
+
+    <div class="taunt" id="taunt"></div>
+    <div class="yes-message" id="yesMessage">I love you more than words can say. Forever yours. ♡</div>
+  </div>
+</div>
+
+<canvas id="fx"></canvas>
+
+<script>
+(function(){
+  // ---------- Ambient floating petals ----------
+  const stage = document.getElementById('stage');
+  const petalChars = ['♥','❤','💗','✿'];
+  for(let i=0;i<22;i++){
+    const p = document.createElement('div');
+    p.className = 'petal';
+    p.textContent = petalChars[Math.floor(Math.random()*petalChars.length)];
+    p.style.left = Math.random()*100 + 'vw';
+    p.style.fontSize = (12 + Math.random()*18) + 'px';
+    p.style.setProperty('--drift-x', (Math.random()*160 - 80) + 'px');
+    p.style.animationDuration = (9 + Math.random()*10) + 's';
+    p.style.animationDelay = (Math.random()*10) + 's';
+    stage.appendChild(p);
+  }
+
+  // ---------- Elements ----------
+  const yesBtn = document.getElementById('yesBtn');
+  const noBtn = document.getElementById('noBtn');
+  const taunt = document.getElementById('taunt');
+  const yesMessage = document.getElementById('yesMessage');
+  const question = document.getElementById('question');
+  const buttonsRow = document.querySelector('.buttons');
+
+  const taunts = [
+    "nice try 😏",
+    "nope, not today",
+    "you can't catch me",
+    "try again, love",
+    "so close!",
+    "keep trying ♡",
+    "almost... not quite",
+    "I dodge better than that",
+    "faster than that!",
+    "not happening"
+  ];
+
+  let noAttempts = 0;
+  let noEscaped = false;
+
+  function getSafeArea(el){
+    const rect = el.getBoundingClientRect();
+    const margin = 20;
+    const maxX = window.innerWidth - rect.width - margin;
+    const maxY = window.innerHeight - rect.height - margin;
+    return {
+      x: Math.max(margin, Math.random() * maxX),
+      y: Math.max(margin, Math.random() * maxY)
+    };
+  }
+
+  function moveNoButton(){
+    noAttempts++;
+    taunt.textContent = taunts[Math.floor(Math.random()*taunts.length)];
+
+    if(!noEscaped){
+      // switch to fixed positioning the first time it runs away
+      const rect = noBtn.getBoundingClientRect();
+      noBtn.style.position = 'fixed';
+      noBtn.style.left = rect.left + 'px';
+      noBtn.style.top = rect.top + 'px';
+      noBtn.classList.add('escaping');
+      noEscaped = true;
+    }
+
+    const pos = getSafeArea(noBtn);
+    noBtn.style.left = pos.x + 'px';
+    noBtn.style.top = pos.y + 'px';
+
+    // random extra flair: rotate, scale, occasionally swap with yes button
+    const rot = (Math.random()*40 - 20).toFixed(1);
+    const scale = (0.8 + Math.random()*0.5).toFixed(2);
+    noBtn.style.transform = `rotate(${rot}deg) scale(${scale})`;
+
+    // occasionally shrink further as attempts increase (gets meaner)
+    if(noAttempts > 5){
+      noBtn.style.transform += ` scale(${Math.max(0.5, 1 - noAttempts*0.03)})`;
+    }
+
+    // sometimes swap the Yes and No button labels/positions
+    if(Math.random() < 0.3){
+      swapButtons();
+    }
+
+    // grow the yes button a little each time, invitingly
+    yesBtn.classList.add('grown');
+    setTimeout(()=> yesBtn.classList.remove('grown'), 300);
+  }
+
+  function swapButtons(){
+    const yesRect = yesBtn.getBoundingClientRect();
+    const noRect = noBtn.getBoundingClientRect();
+
+    // Pin both buttons to their current spots first (so we can animate from here)
+    yesBtn.style.position = 'fixed';
+    yesBtn.style.left = yesRect.left + 'px';
+    yesBtn.style.top = yesRect.top + 'px';
+    yesBtn.classList.add('escaping');
+
+    noBtn.style.position = 'fixed';
+    noBtn.style.left = noRect.left + 'px';
+    noBtn.style.top = noRect.top + 'px';
+    noBtn.classList.add('escaping');
+    noEscaped = true;
+
+    // Force layout so the browser registers the starting position before we animate
+    void yesBtn.offsetWidth;
+    void noBtn.offsetWidth;
+
+    // Now swap: Yes moves to where No was, No moves to where Yes was
+    yesBtn.style.left = noRect.left + 'px';
+    yesBtn.style.top = noRect.top + 'px';
+
+    noBtn.style.left = yesRect.left + 'px';
+    noBtn.style.top = yesRect.top + 'px';
+    noBtn.style.transform = 'rotate(0deg) scale(1)';
+
+    // Briefly flash a swap notice
+    taunt.textContent = "whoops, we switched places!";
+  }
+
+  // Escape on hover too, for extra chaos on desktop
+  noBtn.addEventListener('mouseenter', (e)=>{
+    if(window.matchMedia('(hover: hover)').matches){
+      moveNoButton();
+    }
+  });
+
+  noBtn.addEventListener('click', (e)=>{
+    e.preventDefault();
+    moveNoButton();
+  });
+
+  // touch devices: also dodge on touchstart so tapping doesn't register
+  noBtn.addEventListener('touchstart', (e)=>{
+    e.preventDefault();
+    moveNoButton();
+  }, {passive:false});
+
+  window.addEventListener('resize', ()=>{
+    if(noEscaped){
+      const pos = getSafeArea(noBtn);
+      noBtn.style.left = pos.x + 'px';
+      noBtn.style.top = pos.y + 'px';
+    }
+  });
+
+  // ---------- YES button: fireworks + hearts ----------
+  yesBtn.addEventListener('click', ()=>{
+    question.textContent = "I knew it! ♡";
+    taunt.textContent = "";
+    yesMessage.classList.add('show');
+    launchCelebration();
+    // disable further no chaos
+    noBtn.style.display = 'none';
+  });
+
+  // ---------- Canvas fireworks / heart particles ----------
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  function resizeCanvas(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const particles = [];
+
+  function randColor(){
+    const colors = ['#ff5d8f','#ffd479','#ff2d6f','#ffb6c8','#ff9d6f','#ffffff'];
+    return colors[Math.floor(Math.random()*colors.length)];
+  }
+
+  function spawnBurst(x, y){
+    const count = 34 + Math.floor(Math.random()*18);
+    for(let i=0;i<count;i++){
+      const angle = (Math.PI*2) * (i/count) + Math.random()*0.3;
+      const speed = 2.5 + Math.random()*5;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed,
+        gravity: 0.06,
+        life: 60 + Math.random()*40,
+        age: 0,
+        size: 6 + Math.random()*8,
+        color: randColor(),
+        shape: Math.random() < 0.65 ? 'heart' : 'dot',
+        rotation: Math.random()*360,
+        spin: (Math.random()*8 - 4)
+      });
+    }
+  }
+
+  function drawHeartShape(x, y, size, color, rotation){
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation * Math.PI/180);
+    ctx.scale(size/20, size/20);
+    ctx.beginPath();
+    ctx.moveTo(0, 6);
+    ctx.bezierCurveTo(0, 3, -3, 0, -7, 0);
+    ctx.bezierCurveTo(-12, 0, -12, 6, -12, 6);
+    ctx.bezierCurveTo(-12, 11, -7, 15, 0, 20);
+    ctx.bezierCurveTo(7, 15, 12, 11, 12, 6);
+    ctx.bezierCurveTo(12, 6, 12, 0, 7, 0);
+    ctx.bezierCurveTo(3, 0, 0, 3, 0, 6);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function animate(){
+    ctx.clearRect(0,0,W,H);
+    for(let i = particles.length-1; i>=0; i--){
+      const p = particles[i];
+      p.age++;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= 0.992;
+      p.rotation += p.spin;
+
+      const lifeRatio = 1 - (p.age / p.life);
+      if(lifeRatio <= 0){
+        particles.splice(i,1);
+        continue;
+      }
+
+      ctx.globalAlpha = Math.max(0, lifeRatio);
+      if(p.shape === 'heart'){
+        drawHeartShape(p.x, p.y, p.size * lifeRatio + p.size*0.4, p.color, p.rotation);
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size*0.35, 0, Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  function launchCelebration(){
+    // Multiple bursts across the screen, staggered, like fireworks
+    const burstPoints = 7;
+    for(let i=0;i<burstPoints;i++){
+      setTimeout(()=>{
+        const x = W * (0.15 + Math.random()*0.7);
+        const y = H * (0.15 + Math.random()*0.5);
+        spawnBurst(x, y);
+      }, i * 260);
+    }
+    // continuous gentle heart rain for a bit
+    let rainCount = 0;
+    const rainInterval = setInterval(()=>{
+      rainCount++;
+      particles.push({
+        x: Math.random()*W,
+        y: -20,
+        vx: (Math.random()*2 - 1),
+        vy: 1.5 + Math.random()*2,
+        gravity: 0.01,
+        life: 220,
+        age: 0,
+        size: 8 + Math.random()*10,
+        color: randColor(),
+        shape: 'heart',
+        rotation: Math.random()*360,
+        spin: (Math.random()*3 - 1.5)
+      });
+      if(rainCount > 40) clearInterval(rainInterval);
+    }, 120);
+  }
+
+})();
+</script>
+
+</body>
+</html>
