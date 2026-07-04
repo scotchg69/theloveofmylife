@@ -313,6 +313,9 @@
 
   let noAttempts = 0;
   let noEscaped = false;
+  let noScale = 1;
+  const minScale = 0.4;
+  const shrinkStep = 0.06;
 
   function getSafeArea(el){
     const rect = el.getBoundingClientRect();
@@ -343,15 +346,12 @@
     noBtn.style.left = pos.x + 'px';
     noBtn.style.top = pos.y + 'px';
 
-    // random extra flair: rotate, scale, occasionally swap with yes button
-    const rot = (Math.random()*40 - 20).toFixed(1);
-    const scale = (0.8 + Math.random()*0.5).toFixed(2);
-    noBtn.style.transform = `rotate(${rot}deg) scale(${scale})`;
+    // shrink a little more each time she tries, down to a minimum size
+    noScale = Math.max(minScale, noScale - shrinkStep);
 
-    // occasionally shrink further as attempts increase (gets meaner)
-    if(noAttempts > 5){
-      noBtn.style.transform += ` scale(${Math.max(0.5, 1 - noAttempts*0.03)})`;
-    }
+    // random extra flair: rotate
+    const rot = (Math.random()*40 - 20).toFixed(1);
+    noBtn.style.transform = `rotate(${rot}deg) scale(${noScale})`;
 
     // sometimes swap the Yes and No button labels/positions
     if(Math.random() < 0.3){
@@ -389,7 +389,7 @@
 
     noBtn.style.left = yesRect.left + 'px';
     noBtn.style.top = yesRect.top + 'px';
-    noBtn.style.transform = 'rotate(0deg) scale(1)';
+    noBtn.style.transform = `rotate(0deg) scale(${noScale})`;
 
     // Briefly flash a swap notice
     taunt.textContent = "whoops, we switched places!";
